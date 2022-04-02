@@ -52,41 +52,37 @@ extension DecodingError: CustomDebugStringConvertible {
   public var debugDescription: String {
     switch self {
       case .keyNotFound(let key, let context):
-        let output = Output {
+        return Output {
           "\"\(key.stringValue)\" was not found."
           KeyedList {
             KeyedList.Entry("Reason", context.debugDescription)
             KeyedList.Entry("Coding Path", context.codingPath.string)
           }
-        }
-        return output.body
+        }.body
       case .dataCorrupted(let context):
-        let output = Output {
+        return Output {
           "Data corrupted."
           KeyedList {
             KeyedList.Entry("Reason", context.debugDescription)
             KeyedList.Entry("Coding Path", context.codingPath.string)
           }
-        }
-        return output.body
+        }.body
       case .typeMismatch(let type, let context):
-        let output = Output {
+        return Output {
           "Unable to decode \(type)"
           KeyedList {
             KeyedList.Entry("Reason", context.debugDescription)
             KeyedList.Entry("Coding Path", context.codingPath.string)
           }
-        }
-        return output.body
+        }.body
       case .valueNotFound(let type, let context):
-        let output = Output {
+       return Output {
           "Tried to decode \"\(type)\" but found `nil` instead."
           KeyedList {
             KeyedList.Entry("Reason", context.debugDescription)
             KeyedList.Entry("Coding Path", context.codingPath.string)
           }
-        }
-        return output.body
+        }.body
       @unknown default:
         return "A decoding error occurred."
     }
