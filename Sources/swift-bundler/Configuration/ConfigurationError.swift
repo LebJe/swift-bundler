@@ -41,3 +41,54 @@ enum ConfigurationError: LocalizedError {
     }
   }
 }
+
+extension Array where Element == CodingKey {
+  var string: String {
+    self.map(\.stringValue).joined(separator: " -> ")
+  }
+}
+
+extension DecodingError: CustomDebugStringConvertible {
+  public var debugDescription: String {
+    switch self {
+      case .keyNotFound(let key, let context):
+        let output = Output {
+          "\"\(key.stringValue)\" was not found."
+          KeyedList {
+            KeyedList.Entry("Reason", context.debugDescription)
+            KeyedList.Entry("Coding Path", context.codingPath.string)
+          }
+        }
+        return output.body
+      case .dataCorrupted(let context):
+        let output = Output {
+          "Data corrupted."
+          KeyedList {
+            KeyedList.Entry("Reason", context.debugDescription)
+            KeyedList.Entry("Coding Path", context.codingPath.string)
+          }
+        }
+        return output.body
+      case .typeMismatch(let type, let context):
+        let output = Output {
+          "Unable to decode \(type)"
+          KeyedList {
+            KeyedList.Entry("Reason", context.debugDescription)
+            KeyedList.Entry("Coding Path", context.codingPath.string)
+          }
+        }
+        return output.body
+      case .valueNotFound(let type, let context):
+        let output = Output {
+          "Tried to decode \"\(type)\" but found `nil` instead."
+          KeyedList {
+            KeyedList.Entry("Reason", context.debugDescription)
+            KeyedList.Entry("Coding Path", context.codingPath.string)
+          }
+        }
+        return output.body
+      @unknown default:
+        return "A decoding error occurred."
+    }
+  }
+}
